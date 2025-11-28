@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CalculateSales {
@@ -37,8 +39,23 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-
-
+		//指定したパスに存在するすべてのファイルの情報を格納
+		File[] files = new File("C:\\Users\\trainee1308\\Desktop\\売り上げ集計課題").listFiles();
+		
+		//先にファイル情報格納するList宣言	
+		List<File> rcdFiles = new ArrayList<>();
+				
+		//Filesの数だけ繰り返すことで、指定したパスに存在するすべてのファイルの数繰り返し
+		for(int i = 0; i < files.length; i++) {
+		files[i].getName();
+		
+		//ファイル名判定
+			if(files[i].getName().matches("^[0-9]{8}\\.rcd$")) {
+			
+				//条件に当てはまったものだけList(ArrayList)に追加する
+			rcdFiles.add(files[i]);
+		}
+	}
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
@@ -68,6 +85,12 @@ public class CalculateSales {
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				//,で分割
+				String[] items = line.split(",");
+				
+				//Mapに追加する情報をputの引数として設定する
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 				System.out.println(line);
 			}
 
