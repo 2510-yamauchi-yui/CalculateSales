@@ -126,6 +126,12 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
+			//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示する
+			if(!file.exists()) {
+				System.out.println( FILE_NOT_EXIST);
+				//処理を終了する
+				return false;
+			}
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
@@ -139,6 +145,13 @@ public class CalculateSales {
 				//Mapに追加する情報をputの引数として設定する
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
+				
+				//仕様が満たされていない場合、エラーメッセージを表示する
+				if((items.length != 2) || !items[0].matches("^[0-9]{3}$")) {
+					System.out.println(FILE_INVALID_FORMAT);
+					//処理を終了する
+					return false;
+				}
 			}
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
