@@ -125,7 +125,7 @@ public class CalculateSales {
 		BufferedReader br = null;
 
 		try {
-			File file = new File(path,fileName);
+			File file = new File(path, fileName);
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
