@@ -70,31 +70,28 @@ public class CalculateSales {
 
 				//売上ファイルの中身を保持するList宣言
 				List<String> salesRecord = new ArrayList<String>();
-				
+
 				String line;
 				//ファイルの中身読み込み、0に支店コード、1に売上
 				while((line = br.readLine()) != null) {
-				
+
 					salesRecord.add(line);
-					
 				}
-				
 				//売上ファイルから読み込んだ売上金額を加算するために型の変換を行う
 				long fileSale = Long.parseLong(salesRecord.get(1));
-				
+
 				//支店コード
 				String branch = salesRecord.get(0);
-				
+
 				//読み込んだ売上金額を加算する
 				Long saleAmount = branchSales.get(branch) + fileSale;
-				
+
 				//マップの要素追加
 				branchSales.put(branch, saleAmount);
-				
-				
+
 			} catch(IOException e) {
-					System.out.println(UNKNOWN_ERROR);
-					return;
+				System.out.println(UNKNOWN_ERROR);
+				return;
 			} finally {
 				// ファイルを開いている場合
 				if(br != null) {
@@ -106,15 +103,13 @@ public class CalculateSales {
 						return;
 					}
 				}
-			}			
+			}
 		}
-	
 
 		// 支店別集計ファイル書き込み処理
 		if(!writeFile(args[0], FILE_NAME_BRANCH_OUT, branchNames, branchSales)) {
 			return;
 		}
-
 	}
 
 	/**
@@ -135,7 +130,7 @@ public class CalculateSales {
 			br = new BufferedReader(fr);
 
 			String line;
-			// 一行ずつ読み込む 
+			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				//,で分割
@@ -176,9 +171,9 @@ public class CalculateSales {
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		// ※ここに書き込み処理を作成してください。(処理内容3-1)
 		BufferedWriter bw = null;
-		
+
 		try {
-			File file = new File("C:\\Users\\trainee1308\\Desktop\\売り上げ集計課題\\branch.out");
+			File file = new File(path,fileName);
 			FileWriter fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
 			//keyの取得
@@ -192,11 +187,11 @@ public class CalculateSales {
 				bw.write(key + "," + name + "," + sale);
 				//改行
 				bw.newLine();
-			}	
+			}
 			return true;
-			
+
 		} catch(IOException e) {
-			System.out.println(UNKNOWN_ERROR); 
+			System.out.println(UNKNOWN_ERROR);
 			return false;
 		} finally {
 			// ファイルを開いている場合
