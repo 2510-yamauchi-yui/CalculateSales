@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,10 @@ public class CalculateSales {
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
+	private static final String SALESFILE_NOT_SERIAL_NUMBER = "売上ファイル名が連番になっていません";
+	private static final String SALES_AMOUNT_TOO_LARGE = "合計金額が10桁を超えました";
+	private static final String BRANCH_NOT_EXIST = "の支店コードが不正です";
+	private static final String SALESFILE_INVALID_FORMAT = "のフォーマットが不正です";
 
 	/**
 	 * メインメソッド
@@ -58,6 +63,22 @@ public class CalculateSales {
 			}
 		}
 
+		//Listをソート
+		Collections.sort(rcdFiles);
+		for(int i = 0; i < rcdFiles.size() - 1; i++) {
+
+			//比較するファイル名の先頭から数字8文字を切り出し、int型に変換する
+			int former = Integer.parseInt((rcdFiles.get(i).getName()).substring(0, 8));
+			int latter = Integer.parseInt((rcdFiles.get(i + 1)).getName().substring(0, 8));
+
+			//数字を比較して、差が1ではなかった時にエラーメッセージを表示する（エラー処理2-1）
+			if((latter - former) != 1) {
+				System.out.println(SALESFILE_NOT_SERIAL_NUMBER);
+				//処理を終了する
+				return;
+			}
+		}
+
 		//rcdFilesに格納している数繰り返す
 		for(int i = 0; i < rcdFiles.size(); i++) {
 			//売上ファイルの1行目支店コード、2行目売上金額
@@ -77,6 +98,21 @@ public class CalculateSales {
 
 					salesRecord.add(line);
 				}
+
+				//売上ファイルのフォーマットが正しくない場合、エラーメッセージを表示する（エラー処理2-4）
+				if(salesRecord.size() !=2) {
+					System.out.println(rcdFiles.get(i).getName() + SALESFILE_INVALID_FORMAT);
+					//処理を終了する
+					return;
+				}
+
+				//売上ファイルの支店コードが支店定義ファイルに存在しない場合、エラーメッセージを表示する（エラー処理2-3）
+				if(!branchNames.containsKey(salesRecord.get(0))) {
+					System.out.println(rcdFiles.get(i).getName() + BRANCH_NOT_EXIST);
+					//処理を終了する
+					return;
+				}
+
 				//売上ファイルから読み込んだ売上金額を加算するために型の変換を行う
 				long fileSale = Long.parseLong(salesRecord.get(1));
 
@@ -86,18 +122,27 @@ public class CalculateSales {
 				//読み込んだ売上金額を加算する
 				Long saleAmount = branchSales.get(branch) + fileSale;
 
+				//売上金額合計が11桁以上の場合、エラーメッセージを表示する（エラー処理2-2）
+				if(saleAmount >= 10000000000L) {
+					System.out.println(SALES_AMOUNT_TOO_LARGE);
+					//処理を終了する
+					return;
+				}
+
 				//マップの要素追加
 				branchSales.put(branch, saleAmount);
 
 			} catch(IOException e) {
 				System.out.println(UNKNOWN_ERROR);
 				return;
+
 			} finally {
 				// ファイルを開いている場合
 				if(br != null) {
 					try {
 						// ファイルを閉じる
 						br.close();
+
 					} catch(IOException e) {
 						System.out.println(UNKNOWN_ERROR);
 						return;
@@ -126,7 +171,7 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
-			//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示する
+			//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示する（エラー処理1-1）
 			if(!file.exists()) {
 				System.out.println( FILE_NOT_EXIST);
 				//処理を終了する
@@ -145,17 +190,19 @@ public class CalculateSales {
 				//Mapに追加する情報をputの引数として設定する
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
-				
-				//仕様が満たされていない場合、エラーメッセージを表示する
+
+				//仕様が満たされていない場合、エラーメッセージを表示する（エラー処理1-2）
 				if((items.length != 2) || !items[0].matches("^[0-9]{3}$")) {
 					System.out.println(FILE_INVALID_FORMAT);
 					//処理を終了する
 					return false;
 				}
 			}
+
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
+
 		} finally {
 			// ファイルを開いている場合
 			if(br != null) {
@@ -205,6 +252,7 @@ public class CalculateSales {
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
+
 		} finally {
 			// ファイルを開いている場合
 			if(bw != null) {
