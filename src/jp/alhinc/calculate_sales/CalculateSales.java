@@ -125,7 +125,7 @@ public class CalculateSales {
 		BufferedReader br = null;
 
 		try {
-			File file = new File(path, fileName);
+			File file = new File(path,fileName);
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
@@ -140,7 +140,6 @@ public class CalculateSales {
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
 			}
-
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
 			return false;
@@ -173,7 +172,7 @@ public class CalculateSales {
 		BufferedWriter bw = null;
 
 		try {
-			File file = new File(path,fileName);
+			File file = new File(path, fileName);
 			FileWriter fw = new FileWriter(file);
 			bw = new BufferedWriter(fw);
 			//keyの取得
