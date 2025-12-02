@@ -35,6 +35,12 @@ public class CalculateSales {
 	 * @param コマンドライン引数
 	 */
 	public static void main(String[] args) {
+		//コマンドライン引数が渡されていなかった場合、エラーメッセージを表示（エラー処理3-1）
+		if(args.length != 1) {
+			System.out.println(UNKNOWN_ERROR);
+			return;
+		}
+
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
@@ -55,8 +61,8 @@ public class CalculateSales {
 		//Filesの数だけ繰り返すことで、指定したパスに存在するすべてのファイルの数繰り返し
 		for(int i = 0; i < files.length; i++) {
 
-			//ファイル名判定
-			if(files[i].getName().matches("^[0-9]{8}\\.rcd$")) {
+			//ファイル名判定、ファイルかどうかの確認をして、ファイルではなかった時にエラーメッセージ表示（エラー処理3）
+			if(files[i].isFile() && files[i].getName().matches("^[0-9]{8}\\.rcd$")) {
 
 				//条件に当てはまったものだけList(ArrayList)に追加する
 				rcdFiles.add(files[i]);
@@ -115,6 +121,11 @@ public class CalculateSales {
 
 				//売上ファイルから読み込んだ売上金額を加算するために型の変換を行う
 				long fileSale = Long.parseLong(salesRecord.get(1));
+
+				//売上金額が数字でない場合、エラーメッセージを表示する（エラー処理3-2）
+				if(!salesRecord.get(1).matches("^[0-9]*$")) {
+					System.out.println(UNKNOWN_ERROR);
+				}
 
 				//支店コード
 				String branch = salesRecord.get(0);
