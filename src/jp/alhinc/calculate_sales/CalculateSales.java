@@ -17,8 +17,14 @@ public class CalculateSales {
 	// 支店定義ファイル名
 	private static final String FILE_NAME_BRANCH_LST = "branch.lst";
 
+	//商品定義ファイル名
+	private static final String FILE_NAME_COMMODITY_LST = "commodity.lst";
+
 	// 支店別集計ファイル名
 	private static final String FILE_NAME_BRANCH_OUT = "branch.out";
+
+	//商品別集計ファイル名
+	private static final String FILE_NAME_COMMODITY_OUT = "commodity.out";
 
 	// エラーメッセージ
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
@@ -45,9 +51,18 @@ public class CalculateSales {
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
+		//商品コードと商品名を保持するMap
+		Map<String, String> commodityNames = new HashMap<>();
+		//商品コードと売上金額を保持するMap
+		Map<String, Long> commoditySales = new HashMap<>();
 
 		// 支店定義ファイル読み込み処理
 		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
+			return;
+		}
+
+		//商品定義ファイル読み込み処理（商品定義の追加1-3）
+		if(!readFile(args[0], FILE_NAME_COMMODITY_LST, commodityNames, commoditySales)) {
 			return;
 		}
 
@@ -99,13 +114,12 @@ public class CalculateSales {
 				List<String> salesRecord = new ArrayList<String>();
 
 				String line;
-				//ファイルの中身読み込み、0に支店コード、1に売上
+				//ファイルの中身読み込み、0に支店コード、1に商品コード、2に売上
 				while((line = br.readLine()) != null) {
 					salesRecord.add(line);
 				}
-
 				//売上ファイルのフォーマットが正しくない場合、エラーメッセージを表示する（エラー処理2-4）
-				if(salesRecord.size() != 2) {
+				if(salesRecord.size() != 3) {
 					System.out.println(rcdFiles.get(i).getName() + SALESFILE_INVALID_FORMAT);
 					//処理を終了する
 					return;
@@ -169,7 +183,7 @@ public class CalculateSales {
 	}
 
 	/**
-	 * 支店定義ファイル読み込み処理
+	 * 支店定義、商品定義ファイル読み込み処理
 	 *
 	 * @param フォルダパス C:\\Users\\trainee1308\\Desktop\\売り上げ集計課題
 	 * @param ファイル名 brench.lst
@@ -177,12 +191,12 @@ public class CalculateSales {
 	 * @param 支店コードと売上金額を保持するMap branchSales
 	 * @return 読み込み可否
 	 */
-	private static boolean readFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
+	private static boolean readFile(String path, String fileName, Map<String, String> Names, Map<String, Long> Sales) {
 		BufferedReader br = null;
 
 		try {
 			File file = new File(path, fileName);
-			//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示する（エラー処理1-1）
+			//ファイルが存在しない場合、コンソールにエラーメッセージを表示する（エラー処理1-1）
 			if(!file.exists()) {
 				System.out.println( FILE_NOT_EXIST);
 				//処理を終了する
@@ -194,11 +208,11 @@ public class CalculateSales {
 			String line;
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
-				// ※ここの読み込み処理を変更してください。(処理内容1-2)
+				// ※ここの読み込み処理を変更してください。(処理内容1-2),商品定義の追加1-4
 				//,で分割
 				String[] items = line.split(",");
 
-				//仕様が満たされていない場合、エラーメッセージを表示する（エラー処理1-2）
+				//仕様が満たされていない場合、エラーメッセージを表示する（エラー処理1-2、商品定義の追加エラー処理1-3）
 				if((items.length != 2) || !items[0].matches("^[0-9]{3}$")) {
 					System.out.println(FILE_INVALID_FORMAT);
 					//処理を終了する
@@ -206,8 +220,8 @@ public class CalculateSales {
 				}
 
 				//Mapに追加する情報をputの引数として設定する
-				branchNames.put(items[0], items[1]);
-				branchSales.put(items[0], 0L);
+				Names.put(items[0], items[1]);
+				Sales.put(items[0], 0L);
 			}
 
 		} catch(IOException e) {
