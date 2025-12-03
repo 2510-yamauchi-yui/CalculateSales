@@ -105,7 +105,7 @@ public class CalculateSales {
 				}
 
 				//売上ファイルのフォーマットが正しくない場合、エラーメッセージを表示する（エラー処理2-4）
-				if(salesRecord.size() !=2) {
+				if(salesRecord.size() != 2) {
 					System.out.println(rcdFiles.get(i).getName() + SALESFILE_INVALID_FORMAT);
 					//処理を終了する
 					return;
@@ -118,13 +118,14 @@ public class CalculateSales {
 					return;
 				}
 
-				//売上ファイルから読み込んだ売上金額を加算するために型の変換を行う
-				long fileSale = Long.parseLong(salesRecord.get(1));
-
 				//売上金額が数字でない場合、エラーメッセージを表示する（エラー処理3-2）
 				if(!salesRecord.get(1).matches("^[0-9]*$")) {
 					System.out.println(UNKNOWN_ERROR);
+					return;
 				}
+
+				//売上ファイルから読み込んだ売上金額を加算するために型の変換を行う
+				long fileSale = Long.parseLong(salesRecord.get(1));
 
 				//支店コード
 				String branch = salesRecord.get(0);
@@ -197,16 +198,16 @@ public class CalculateSales {
 				//,で分割
 				String[] items = line.split(",");
 
-				//Mapに追加する情報をputの引数として設定する
-				branchNames.put(items[0], items[1]);
-				branchSales.put(items[0], 0L);
-
 				//仕様が満たされていない場合、エラーメッセージを表示する（エラー処理1-2）
 				if((items.length != 2) || !items[0].matches("^[0-9]{3}$")) {
 					System.out.println(FILE_INVALID_FORMAT);
 					//処理を終了する
 					return false;
 				}
+
+				//Mapに追加する情報をputの引数として設定する
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 			}
 
 		} catch(IOException e) {
