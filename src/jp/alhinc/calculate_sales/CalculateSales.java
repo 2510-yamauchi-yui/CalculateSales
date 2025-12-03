@@ -61,7 +61,7 @@ public class CalculateSales {
 		//Filesの数だけ繰り返すことで、指定したパスに存在するすべてのファイルの数繰り返し
 		for(int i = 0; i < files.length; i++) {
 
-			//ファイル名判定、ファイルかどうかの確認をして、ファイルではなかった時にエラーメッセージ表示（エラー処理3）
+			//ファイル名判定、ファイルかどうかの確認（エラー処理3）
 			if(files[i].isFile() && files[i].getName().matches("^[0-9]{8}\\.rcd$")) {
 
 				//条件に当てはまったものだけList(ArrayList)に追加する
@@ -101,7 +101,6 @@ public class CalculateSales {
 				String line;
 				//ファイルの中身読み込み、0に支店コード、1に売上
 				while((line = br.readLine()) != null) {
-
 					salesRecord.add(line);
 				}
 
